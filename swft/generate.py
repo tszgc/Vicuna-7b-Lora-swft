@@ -170,7 +170,7 @@ if __name__ == "__main__":
             generation_config=generation_config,
             return_dict_in_generate=True,
             output_scores=False,
-            repetition_penalty=1.3,
+            repetition_penalty=1.3
         )
         output = generation_output.sequences[0]
         output = tokenizer.decode(output).strip()
