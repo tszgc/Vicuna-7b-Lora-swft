@@ -159,7 +159,7 @@ if __name__ == "__main__":
         eos_token_id=2,
         pad_token_id=0,
         max_new_tokens=128,  # max_length=max_new_tokens+input_sequence
-        min_new_tokens=1,  # min_length=min_new_tokens+input_sequence
+        min_new_tokens=1  # min_length=min_new_tokens+input_sequence
 
     )
     print(input_ids)
