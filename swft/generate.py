@@ -11,6 +11,7 @@ assert (
 ), "LLaMA is now in HuggingFace's main branch.\nPlease reinstall it: pip uninstall transformers && pip install git+https://github.com/huggingface/transformers.git"
 from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
 
+print('execute')
 parser = argparse.ArgumentParser()
 parser.add_argument("--model_path", type=str, default="/Users/nina/zoo/document4work/SWFT/LLM/vicuna-7b")
 parser.add_argument("--lora_path", type=str, default="Facico/Chinese-Vicuna-lora-7b-3epoch-belle-and-guanaco")
@@ -102,39 +103,41 @@ def evaluate(
         repetition_penalty=2.0,
         **kwargs,
 ):
-    print('开始执行evaluate')
-    inputs = tokenizer(input, return_tensors="pt")
-    print(inputs)
-    input_ids = inputs["input_ids"].to(device)
-    generation_config = GenerationConfig(
-        temperature=temperature,
-        top_p=top_p,
-        top_k=top_k,
-        num_beams=num_beams,
-        bos_token_id=1,
-        eos_token_id=2,
-        pad_token_id=0,
-        max_new_tokens=max_new_tokens,  # max_length=max_new_tokens+input_sequence
-        min_new_tokens=min_new_tokens,  # min_length=min_new_tokens+input_sequence
-        **kwargs,
-    )
-    print(input_ids)
-    with torch.no_grad():
-        print('torch.no_grad()执行')
-        generation_output = model.generate(
-            input_ids=input_ids,
-            generation_config=generation_config,
-            return_dict_in_generate=True,
-            output_scores=False,
-            repetition_penalty=1.3,
+    try:
+        print('开始执行evaluate')
+        inputs = tokenizer(input, return_tensors="pt")
+        print(inputs)
+        input_ids = inputs["input_ids"].to(device)
+        generation_config = GenerationConfig(
+            temperature=temperature,
+            top_p=top_p,
+            top_k=top_k,
+            num_beams=num_beams,
+            bos_token_id=1,
+            eos_token_id=2,
+            pad_token_id=0,
+            max_new_tokens=max_new_tokens,  # max_length=max_new_tokens+input_sequence
+            min_new_tokens=min_new_tokens,  # min_length=min_new_tokens+input_sequence
+            **kwargs,
         )
-        output = generation_output.sequences[0]
-        output = tokenizer.decode(output).strip()
-        # output = tokenizer.decode(output).split("### Response:")[1].strip()
-        print('------------')
-        print(output)
-        yield output
-
+        print(input_ids)
+        with torch.no_grad():
+            print('torch.no_grad()执行')
+            generation_output = model.generate(
+                input_ids=input_ids,
+                generation_config=generation_config,
+                return_dict_in_generate=True,
+                output_scores=False,
+                repetition_penalty=1.3,
+            )
+            output = generation_output.sequences[0]
+            output = tokenizer.decode(output).strip()
+            # output = tokenizer.decode(output).split("### Response:")[1].strip()
+            print('------------')
+            print(output)
+            yield output
+    except Exception as msg:
+        print(msg)
 
 def test():
     print('开始测试1')
