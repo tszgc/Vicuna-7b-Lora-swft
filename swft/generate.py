@@ -86,6 +86,7 @@ def evaluate(
         **kwargs,
     )
     with torch.no_grad():
+        print('torch.no_grad()执行')
         generation_output = model.generate(
             input_ids=input_ids,
             generation_config=generation_config,
@@ -96,6 +97,7 @@ def evaluate(
         output = generation_output.sequences[0]
         output = tokenizer.decode(output).strip()
         # output = tokenizer.decode(output).split("### Response:")[1].strip()
+        print('------------')
         print(output)
         yield output
 
@@ -103,6 +105,7 @@ def test():
     print('开始测试')
     input = "###-TASK-A-A-A, no matter feasibility, answer only one word, 'positive' or 'negative', by this sentence:Blockware\u2019s team expects Bitcoin\u2019s adoption rate to be faster than previous technologies, but believes it's still in early-stage growth.\\xa0";
     output = evaluate(input)
+    print('>>>>>>>>>>>>>>>>>')
     print(output)
 
 if __name__ == "__main__":
