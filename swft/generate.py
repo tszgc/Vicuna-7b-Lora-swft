@@ -12,8 +12,8 @@ assert (
 from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--model_path", type=str, default="/model/13B_hf")
-parser.add_argument("--lora_path", type=str, default="checkpoint-3000")
+parser.add_argument("--model_path", type=str, default="/Users/nina/zoo/document4work/SWFT/LLM/vicuna-7b")
+parser.add_argument("--lora_path", type=str, default="Facico/Chinese-Vicuna-lora-7b-3epoch-belle-and-guanaco")
 parser.add_argument("--use_typewriter", type=int, default=1)
 parser.add_argument("--use_local", type=int, default=1)
 args = parser.parse_args()
@@ -39,48 +39,19 @@ if not os.path.exists(lora_bin_path) and args.use_local:
     else:
         assert ('Checkpoint is not Found!')
 
-if torch.cuda.is_available():
-    device = "cuda"
-else:
-    device = "cpu"
+device="cuda"
 
-try:
-    if torch.backends.mps.is_available():
-        device = "mps"
-except:
-    pass
+model = LlamaForCausalLM.from_pretrained(
+    BASE_MODEL,
+    #load_in_8bit=LOAD_8BIT,
+    torch_dtype=torch.float16,
+    device_map="auto", #device_map={"": 0},
+)
+model = StreamPeftGenerationMixin.from_pretrained(
+    model, LORA_WEIGHTS, torch_dtype=torch.float16, device_map="auto", #device_map={"": 0}
+)
 
-if device == "cuda":
-    model = LlamaForCausalLM.from_pretrained(
-        BASE_MODEL,
-        #load_in_8bit=LOAD_8BIT,
-        torch_dtype=torch.float16,
-        device_map="auto", #device_map={"": 0},
-    )
-    model = StreamPeftGenerationMixin.from_pretrained(
-        model, LORA_WEIGHTS, torch_dtype=torch.float16, device_map="auto", #device_map={"": 0}
-    )
-elif device == "mps":
-    model = LlamaForCausalLM.from_pretrained(
-        BASE_MODEL,
-        device_map={"": device},
-        torch_dtype=torch.float16,
-    )
-    model = StreamPeftGenerationMixin.from_pretrained(
-        model,
-        LORA_WEIGHTS,
-        device_map={"": device},
-        torch_dtype=torch.float16,
-    )
-else:
-    model = LlamaForCausalLM.from_pretrained(
-        BASE_MODEL, device_map={"": device}, low_cpu_mem_usage=True
-    )
-    model = StreamPeftGenerationMixin.from_pretrained(
-        model,
-        LORA_WEIGHTS,
-        device_map={"": device},
-    )
+
 
 
 def generate_prompt(instruction, input=None):
