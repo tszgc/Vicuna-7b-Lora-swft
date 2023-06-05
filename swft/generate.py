@@ -102,7 +102,9 @@ def evaluate(
         repetition_penalty=2.0,
         **kwargs,
 ):
+    print('开始执行evaluate')
     inputs = tokenizer(input, return_tensors="pt")
+    print(inputs)
     input_ids = inputs["input_ids"].to(device)
     generation_config = GenerationConfig(
         temperature=temperature,
