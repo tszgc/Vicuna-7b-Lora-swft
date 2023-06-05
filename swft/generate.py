@@ -52,12 +52,12 @@ except:
 if device == "cuda":
     model = LlamaForCausalLM.from_pretrained(
         BASE_MODEL,
-        #load_in_8bit=LOAD_8BIT,
+        # load_in_8bit=LOAD_8BIT,
         torch_dtype=torch.float16,
-        device_map="auto", #device_map={"": 0},
+        device_map="auto",  # device_map={"": 0},
     )
     model = StreamPeftGenerationMixin.from_pretrained(
-        model, LORA_WEIGHTS, torch_dtype=torch.float16, device_map="auto", #device_map={"": 0}
+        model, LORA_WEIGHTS, torch_dtype=torch.float16, device_map="auto",  # device_map={"": 0}
     )
 elif device == "mps":
     model = LlamaForCausalLM.from_pretrained(
@@ -83,9 +83,6 @@ else:
 
 print('device=' + device)
 
-
-
-
 if not LOAD_8BIT:
     model.half()  # seems to fix bugs for some users.
 
@@ -93,16 +90,17 @@ model.eval()
 if torch.__version__ >= "2" and sys.platform != "win32":
     model = torch.compile(model)
 
+
 def evaluate(
-    input,
-    temperature=0.1,
-    top_p=0.75,
-    top_k=40,
-    num_beams=4,
-    max_new_tokens=128,
-    min_new_tokens=1,
-    repetition_penalty=2.0,
-    **kwargs,
+        input,
+        temperature=0.1,
+        top_p=0.75,
+        top_k=40,
+        num_beams=4,
+        max_new_tokens=128,
+        min_new_tokens=1,
+        repetition_penalty=2.0,
+        **kwargs,
 ):
     inputs = tokenizer(input, return_tensors="pt")
     input_ids = inputs["input_ids"].to(device)
@@ -114,10 +112,11 @@ def evaluate(
         bos_token_id=1,
         eos_token_id=2,
         pad_token_id=0,
-        max_new_tokens=max_new_tokens, # max_length=max_new_tokens+input_sequence
-        min_new_tokens=min_new_tokens, # min_length=min_new_tokens+input_sequence
+        max_new_tokens=max_new_tokens,  # max_length=max_new_tokens+input_sequence
+        min_new_tokens=min_new_tokens,  # min_length=min_new_tokens+input_sequence
         **kwargs,
     )
+    print(input_ids)
     with torch.no_grad():
         print('torch.no_grad()执行')
         generation_output = model.generate(
@@ -134,12 +133,14 @@ def evaluate(
         print(output)
         yield output
 
+
 def test():
     print('开始测试')
     input = "###-TASK-A-A-A, no matter feasibility, answer only one word, 'positive' or 'negative', by this sentence:Blockware\u2019s team expects Bitcoin\u2019s adoption rate to be faster than previous technologies, but believes it's still in early-stage growth.\\xa0";
     output = evaluate(input)
     print('>>>>>>>>>>>>>>>>>')
     print(output)
+
 
 if __name__ == "__main__":
     test()
