@@ -159,7 +159,7 @@ if __name__ == "__main__":
         eos_token_id=2,
         pad_token_id=0,
         max_new_tokens=128,  # max_length=max_new_tokens+input_sequence
-        min_new_tokens=1  # min_length=min_new_tokens+input_sequence
+        min_new_tokens=1,  # min_length=min_new_tokens+input_sequence
 
     )
     print(input_ids)
@@ -170,7 +170,7 @@ if __name__ == "__main__":
             generation_config=generation_config,
             return_dict_in_generate=True,
             output_scores=False,
-            repetition_penalty=1.3
+            repetition_penalty=1.3,
         )
         output = generation_output.sequences[0]
         output = tokenizer.decode(output).strip()
