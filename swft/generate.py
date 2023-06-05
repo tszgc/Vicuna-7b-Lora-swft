@@ -14,7 +14,6 @@ from transformers import LlamaTokenizer, LlamaForCausalLM, GenerationConfig
 parser = argparse.ArgumentParser()
 parser.add_argument("--model_path", type=str, default="/Users/nina/zoo/document4work/SWFT/LLM/vicuna-7b")
 parser.add_argument("--lora_path", type=str, default="Facico/Chinese-Vicuna-lora-7b-3epoch-belle-and-guanaco")
-parser.add_argument("--use_typewriter", type=int, default=1)
 parser.add_argument("--use_local", type=int, default=1)
 args = parser.parse_args()
 print(args)
@@ -94,8 +93,8 @@ def evaluate(
             output_scores=False,
             repetition_penalty=1.3,
         )
-        print(generation_output)
         output = generation_output.sequences[0]
+        output = tokenizer.decode(output).strip()
         # output = tokenizer.decode(output).split("### Response:")[1].strip()
         print(output)
         yield output
