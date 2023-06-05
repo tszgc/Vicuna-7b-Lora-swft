@@ -38,17 +38,50 @@ if not os.path.exists(lora_bin_path) and args.use_local:
     else:
         assert ('Checkpoint is not Found!')
 
-device="cuda"
+if torch.cuda.is_available():
+    device = "cuda"
+else:
+    device = "cpu"
 
-model = LlamaForCausalLM.from_pretrained(
-    BASE_MODEL,
-    #load_in_8bit=LOAD_8BIT,
-    torch_dtype=torch.float16,
-    device_map="auto", #device_map={"": 0},
-)
-model = StreamPeftGenerationMixin.from_pretrained(
-    model, LORA_WEIGHTS, torch_dtype=torch.float16, device_map="auto", #device_map={"": 0}
-)
+try:
+    if torch.backends.mps.is_available():
+        device = "mps"
+except:
+    pass
+
+if device == "cuda":
+    model = LlamaForCausalLM.from_pretrained(
+        BASE_MODEL,
+        #load_in_8bit=LOAD_8BIT,
+        torch_dtype=torch.float16,
+        device_map="auto", #device_map={"": 0},
+    )
+    model = StreamPeftGenerationMixin.from_pretrained(
+        model, LORA_WEIGHTS, torch_dtype=torch.float16, device_map="auto", #device_map={"": 0}
+    )
+elif device == "mps":
+    model = LlamaForCausalLM.from_pretrained(
+        BASE_MODEL,
+        device_map={"": device},
+        torch_dtype=torch.float16,
+    )
+    model = StreamPeftGenerationMixin.from_pretrained(
+        model,
+        LORA_WEIGHTS,
+        device_map={"": device},
+        torch_dtype=torch.float16,
+    )
+else:
+    model = LlamaForCausalLM.from_pretrained(
+        BASE_MODEL, device_map={"": device}, low_cpu_mem_usage=True
+    )
+    model = StreamPeftGenerationMixin.from_pretrained(
+        model,
+        LORA_WEIGHTS,
+        device_map={"": device},
+    )
+
+print('device=' + device)
 
 
 
