@@ -49,6 +49,7 @@ try:
         device = "mps"
 except:
     pass
+print('device=' + device)
 
 if device == "cuda":
     model = LlamaForCausalLM.from_pretrained(
@@ -138,26 +139,6 @@ def evaluate(
             yield output
     except Exception as msg:
         print(msg)
-
-
-def generate_prompt(instruction, input=None):
-    if input:
-        return f"""Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-{instruction}
-
-### Input:
-{input}
-
-### Response:"""
-    else:
-        return f"""Below is an instruction that describes a task. Write a response that appropriately completes the request.
-
-### Instruction:
-{instruction}
-
-### Response:"""
 
 
 if __name__ == "__main__":
