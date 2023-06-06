@@ -199,7 +199,7 @@ if __name__ == "__main__":
                 repetition_penalty=1.3,
             )
             output = generation_output.sequences[0]
-            #output = tokenizer.decode(output).strip()
-            output = tokenizer.decode(output).split("### Response:")[1].strip()
+            output = tokenizer.decode(output).strip()
+            #output = tokenizer.decode(output).split("### Response:")[1].strip()
             print('------------')
             print(output)
