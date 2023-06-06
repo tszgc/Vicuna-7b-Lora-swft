@@ -140,14 +140,30 @@ def evaluate(
         print(msg)
 
 
+def generate_prompt(instruction, input=None):
+    if input:
+        return f"""Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
+
+### Instruction:
+{instruction}
+
+### Input:
+{input}
+
+### Response:"""
+    else:
+        return f"""Below is an instruction that describes a task. Write a response that appropriately completes the request.
+
+### Instruction:
+{instruction}
+
+### Response:"""
+
 if __name__ == "__main__":
     print('开始测试1')
-    prompt = """
-    ### Instruction: 
-        ###-TASK-A-A-A, no matter feasibility, answer only one word, 'positive' or 'negative', by this sentence:Blockware\u2019s team expects Bitcoin\u2019s adoption rate to be faster than previous technologies, but believes it's still in early-stage growth.\\xa0
-    
-    ### Response:
-    """
+    input = "###-TASK-A-A-A, no matter feasibility, answer only one word, 'positive' or 'negative', by this sentence:Blockware\u2019s team expects Bitcoin\u2019s adoption rate to be faster than previous technologies, but believes it's still in early-stage growth.\\xa0"
+    prompt = generate_prompt(input)
+
     # output = evaluate(input, 0.1, 0.75, 40, 4, 128, 2.0)
     # print('>>>>>>>>>>>>>>>>>')
     # print(output)
